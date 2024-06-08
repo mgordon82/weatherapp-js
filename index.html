@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+  </head>
+  <body>
+    <header><h1>Weather Dashboard</h1></header>
+    <div class="container is-fluid">
+      <div class="columns">
+        <div class="column is-one-quarter">
+          <section class="search-area mb-4">
+            <label for="cityInput">Search for a City:</label>
+            <input class="input my-3" id="cityInput" type="text" />
+            <span id="errorMsg"></span>
+            <button id="searchCityButton" class="button is-info is-fullwidth">
+              Search
+            </button>
+          </section>
+          <section class="box">
+            <ul>
+              <li>
+                <button
+                  id="minneapolisButton"
+                  class="button is-info is-inverted is-fullwidth"
+                >
+                  Minneapolis
+                </button>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <div class="column">
+          <section class="box">
+            <h2>Minneapolis (6/7/2024)</h2>
+            <div class="columns">
+              <div class="column is-one-quarter">
+                <p>Temp: 72.2º</p>
+                <p>Wind: 8.43 MPH</p>
+                <p>Humidity: 44%</p>
+              </div>
+              <div class="column">
+                <h3>Weather for Today</h3>
+                <p>
+                  Today will be a mix of sun and clouds. There may be a passing
+                  shower or light sprinkle, but overall there should not be a
+                  big hinderance to the day.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <script src="./assets/js/script.js"></script>
+  </body>
+</html>
