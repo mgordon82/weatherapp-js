@@ -1,9 +1,10 @@
 const openWeatherAPIKey = 'ded87b32a4ec2da34bac71e5c2224ee2';
-const cityName = document.getElementById('cityInput').value || '';
 const searchCityButton = document.getElementById('searchCityButton');
-const errorMsg = document.getElementById('errorMsg');
-const weatherLocationsArr = [];
+const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
+let errorMsg = document.getElementById('errorMsg');
+let cityName = document.getElementById('cityInput').value;
 
+// function that will display an error message if city is not filled in
 function displayErrorMsg(type, message) {
   errorMsg.textContent = message;
   errorMsg.setAttribute('class', type);
@@ -16,7 +17,6 @@ searchCityButton.addEventListener('click', function (event) {
   if (cityName === '') {
     displayErrorMsg('has-text-danger', 'Must enter a city');
   }
-  console.log('city', cityName);
   getLatLong(cityName);
 });
 
@@ -29,14 +29,28 @@ function getLatLong(city) {
         return response.json();
       })
       .then(function (data) {
-        console.log(data);
-        getCityWeather(data[0].lat, data[0].lon);
+        const localCity = data[0];
+        console.log('local city data', localCity);
+        getCityWeather(localCity.lat, localCity.lon);
+        if (!duplicateCity(localCity?.name)) {
+          savedCities.push({
+            name: localCity.name,
+            lat: localCity.lat,
+            lon: localCity.lon,
+          });
+          localStorage.setItem('cities', JSON.stringify(savedCities));
+        } else {
+          console.log('city is already in favorite list');
+        }
       });
   }
 }
+function duplicateCity(cityName) {
+  return savedCities?.some((city) => city.name === cityName);
+}
 
 function getCityWeather(lat, long) {
-  if (lat !== null && long !== null) {
+  if (lat && long) {
     fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
     )
@@ -44,12 +58,7 @@ function getCityWeather(lat, long) {
         return response.json();
       })
       .then(function (data) {
-        console.log(data);
-        weatherLocationsArr.push({
-          name: data.name,
-          lat: data.coord.lat,
-          lon: data.coord.lon,
-        });
+        console.log('local weather', data);
         setWeatherData({
           temp: data.main.temp,
           wind: data.wind.speed,
@@ -59,11 +68,36 @@ function getCityWeather(lat, long) {
           status: data.weather[0].main,
         });
       });
+    init();
+    console.log('make it?', savedCities);
   }
 }
 
 function setWeatherData(data) {
-  if (data !== null) {
-    console.log('weather data', data);
+  console.log('weather data', data);
+}
+
+function setCities() {
+  const savedLocations = document.getElementById('savedLocations');
+  savedLocations.innerHTML = '';
+  for (let i = 0; i < savedCities.length; i++) {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.setAttribute('id', `${savedCities[i].name}Button`);
+    button.setAttribute(
+      'class',
+      'button is-info is-inverted is-fullwidth my-4'
+    );
+    button.textContent = savedCities[i].name;
+    li.appendChild(button);
+    savedLocations.appendChild(li);
   }
 }
+
+function init() {
+  errorMsg.textContent = '';
+  cityName = '';
+  setCities();
+}
+
+init();
