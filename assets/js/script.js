@@ -2,7 +2,6 @@ const openWeatherAPIKey = 'ded87b32a4ec2da34bac71e5c2224ee2';
 const searchCityButton = document.getElementById('searchCityButton');
 const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
 let errorMsg = document.getElementById('errorMsg');
-let cityName = document.getElementById('cityInput').value;
 
 // function that will display an error message if city is not filled in
 function displayErrorMsg(type, message) {
@@ -12,12 +11,15 @@ function displayErrorMsg(type, message) {
 
 searchCityButton.addEventListener('click', function (event) {
   event.preventDefault();
-  const cityName = document.getElementById('cityInput').value;
+  let cityName = document.getElementById('cityInput').value;
 
   if (cityName === '') {
     displayErrorMsg('has-text-danger', 'Must enter a city');
   }
   getLatLong(cityName);
+  console.log('did we make it here');
+  cityName = '';
+  init();
 });
 
 function getLatLong(city) {
@@ -75,6 +77,14 @@ function getCityWeather(lat, long) {
 
 function setWeatherData(data) {
   console.log('weather data', data);
+  const localWeatherData = document.getElementById('localWeatherData');
+  localWeatherData.innerHTML = '';
+  const h2 = document.createElement('h2');
+  const p = document.createElement('p');
+  h2.textContent = data.name;
+  p.textContent = data.temp;
+  localWeatherData.appendChild(h2);
+  localWeatherData.appendChild(p);
 }
 
 function setCities() {
