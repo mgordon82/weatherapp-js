@@ -78,13 +78,24 @@ function getCityWeather(lat, long) {
 function setWeatherData(data) {
   console.log('weather data', data);
   const localWeatherData = document.getElementById('localWeatherData');
-  localWeatherData.innerHTML = '';
-  const h2 = document.createElement('h2');
-  const p = document.createElement('p');
-  h2.textContent = data.name;
-  p.textContent = data.temp;
-  localWeatherData.appendChild(h2);
-  localWeatherData.appendChild(p);
+  localWeatherData.innerHTML = `
+    <h2 class="is-size-4">${data.name} (6/7/2024)</h2>
+    <div class="columns">
+        <div class="column is-one-quarter">
+            <p>Temp: ${data.temp}ºF</p>
+            <p>Wind: ${data.wind} MPH</p>
+            <p>Humidity: ${data.humidity}%</p>
+        </div>
+        <div class="column">
+            <h3>Weather for Today</h3>
+            <p>
+                Today will be a mix of sun and clouds. There may be a passing
+                shower or light sprinkle, but overall there should not be a
+                big hinderance to the day.
+            </p>
+        </div>
+    </div>
+  `;
 }
 
 function setCities() {
