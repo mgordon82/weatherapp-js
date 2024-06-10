@@ -33,7 +33,6 @@ function getLatLong(city) {
       })
       .then(function (data) {
         const localCity = data[0];
-        console.log('local city data', localCity);
         getCityWeather(localCity.lat, localCity.lon);
         if (!duplicateCity(localCity?.name)) {
           savedCities.push({
@@ -60,6 +59,7 @@ function getCityWeather(lat, long) {
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
     ).then((response) => {
       if (!response.ok) {
+        // Normally this would be an alert on the screen in a dialog
         console.log('There was an error');
       }
       return response.json().then((data) => ({ data }));
@@ -69,6 +69,7 @@ function getCityWeather(lat, long) {
       `https://api.openweathermap.org/data/2.5/forecast/?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
     ).then((response) => {
       if (!response.ok) {
+        // Normally this would be an alert on the screen in a dialog
         console.log('There was an error');
       }
       return response.json().then((data) => ({ data }));
@@ -100,6 +101,7 @@ function getCityWeather(lat, long) {
         });
       })
       .catch((error) => {
+        // Normally this would be an alert on the screen in a dialog
         console.error('There was an error fetching', error);
       });
   }

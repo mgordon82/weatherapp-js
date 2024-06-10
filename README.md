@@ -27,6 +27,7 @@ The following image shows the web application's appearance:
 ## Links
 
 This application can be accessed at the links below for the repo and for the live app
+
 [GitHub Repo](https://github.com/mgordon82/weatherapp-js)
 
 [GitHub Pages](https://mgordon82.github.io/weatherapp-js/)
