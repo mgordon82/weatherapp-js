@@ -42,8 +42,6 @@ function getLatLong(city) {
           });
           localStorage.setItem('cities', JSON.stringify(savedCities));
           init();
-        } else {
-          console.log('city is already in favorite list');
         }
       });
   }
@@ -103,29 +101,27 @@ function getCityWeather(lat, long) {
 }
 
 function setWeatherData(data) {
-  console.log('weather data', data);
   const localWeatherData = document.getElementById('localWeatherData');
   const localWeatherForecast = document.getElementById('localWeatherForecast');
+  localWeatherForecast.innerHTML = '';
   const forecastData = data.forecast;
   localWeatherData.innerHTML = `
     <h2 class="is-size-4">${data.name} (${dayjs().format('MM/DD/YYYY')})</h2>
-    <img src="https://openweathermap.org/img/wn/${data.icon}.png" />${
-    data.status
-  }
-    <div class="columns">
+    
+    <div class="columns is-align-items-center">
+        <div class="column is-one-quarter is-flex is-align-items-center">
+            <img src="https://openweathermap.org/img/wn/${data.icon}.png" />
+            <span>${data.status}</span>
+        </div>
         <div class="column is-one-quarter">
             <p>Temp: ${data.temp}ºF</p>
+        </div>
+        <div class="column is-one-quarter">
             <p>Wind: ${data.wind} MPH</p>
+        </div>
+        <div class="column is-one-quarter">
             <p>Humidity: ${data.humidity}%</p>
-        </div>
-        <div class="column">
-            <h3>Weather for Today</h3>
-            <p>
-                Today will be a mix of sun and clouds. There may be a passing
-                shower or light sprinkle, but overall there should not be a
-                big hinderance to the day.
-            </p>
-        </div>
+        </div>        
     </div>
   `;
   for (let i = 0; i < forecastData.length; i++) {
@@ -136,15 +132,21 @@ function setWeatherData(data) {
     <section
       class="box has-background-primary-40 has-text-primary-55-invert"
     >
-      <h3>${item.date}</h3>
+      <h3 class="has-text-weight-bold">${item.date}</h3>
       <img src="https://openweathermap.org/img/wn/${item.icon}.png" />
       <p>Temp: ${item.temp}ºF</p>
       <p>Wind: ${item.wind} MPH</p>
-      <p>${item.humidity}%</p>
+      <p>Humidity: ${item.humidity}%</p>
     </section>
   `;
     localWeatherForecast.append(div);
   }
+}
+
+// handles dynamic city button clicks
+function handleCityButton(event) {
+  const city = event.target.textContent;
+  getLatLong(city);
 }
 
 // builds out the list of searched cities
@@ -154,20 +156,16 @@ function setCities() {
   for (let i = 0; i < savedCities.length; i++) {
     const li = document.createElement('li');
     const button = document.createElement('button');
-    const id = `${savedCities[i].name}Button`;
-    console.log('id', id);
+    const id = `${savedCities[i].name.replace(/\s+/g, '')}Button`;
     button.setAttribute('id', id);
     button.setAttribute(
       'class',
       'button is-info is-inverted is-fullwidth my-4'
     );
     button.textContent = savedCities[i].name;
+    button.addEventListener('click', handleCityButton);
     li.appendChild(button);
     savedLocations.appendChild(li);
-    id.addEventListener('click', function (event) {
-      event.preventDefault();
-      getLatLong(savedCities[i].name);
-    });
   }
 }
 
@@ -177,5 +175,6 @@ function init() {
   setCities();
 }
 
+// initializes the page and as a preference, sets Minneapolis as local city
 init();
 getLatLong('minneapolis');
