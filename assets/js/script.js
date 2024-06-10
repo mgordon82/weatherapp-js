@@ -41,6 +41,7 @@ function getLatLong(city) {
             lon: localCity.lon,
           });
           localStorage.setItem('cities', JSON.stringify(savedCities));
+          init();
         } else {
           console.log('city is already in favorite list');
         }
@@ -53,25 +54,47 @@ function duplicateCity(cityName) {
 
 function getCityWeather(lat, long) {
   if (lat && long) {
-    fetch(
+    const currentWeatherFetch = fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
-    )
-      .then(function (response) {
-        return response.json();
+    ).then((response) => {
+      if (!response.ok) {
+        console.log('There was an error');
+      }
+      return response.json().then((data) => ({ data }));
+    });
+
+    const forecastWeatherFetch = fetch(
+      `https://api.openweathermap.org/data/2.5/forecast/?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
+    ).then((response) => {
+      if (!response.ok) {
+        console.log('There was an error');
+      }
+      return response.json().then((data) => ({ data }));
+    });
+    Promise.all([currentWeatherFetch, forecastWeatherFetch])
+      .then(([currentWeatherResponse, forecastWeatherResponse]) => {
+        const currentWeather = currentWeatherResponse.data;
+        const forecastData = forecastWeatherResponse.data;
+        console.log('weather info', currentWeather, forecastData);
       })
-      .then(function (data) {
-        console.log('local weather', data);
-        setWeatherData({
-          temp: data.main.temp,
-          wind: data.wind.speed,
-          humidity: data.main.humidity,
-          name: data.name,
-          icon: data.weather[0].icon,
-          status: data.weather[0].main,
-        });
+      .catch((error) => {
+        console.error('There was an error fetching', error);
       });
-    init();
-    console.log('make it?', savedCities);
+    //   .then(function (response) {
+    //     return response.json();
+    //   })
+    //   .then(function (data) {
+    //     console.log('local weather', data);
+    //     getLocalForecast(lat, long);
+    //     setWeatherData({
+    //       temp: data.main.temp,
+    //       wind: data.wind.speed,
+    //       humidity: data.main.humidity,
+    //       name: data.name,
+    //       icon: data.weather[0].icon,
+    //       status: data.weather[0].main,
+    //     });
+    //   });
   }
 }
 
@@ -80,6 +103,7 @@ function setWeatherData(data) {
   const localWeatherData = document.getElementById('localWeatherData');
   localWeatherData.innerHTML = `
     <h2 class="is-size-4">${data.name} (6/7/2024)</h2>
+    <img src="https://openweathermap.org/img/wn/${data.icon}.png" />${data.status}
     <div class="columns">
         <div class="column is-one-quarter">
             <p>Temp: ${data.temp}ºF</p>
@@ -98,6 +122,35 @@ function setWeatherData(data) {
   `;
 }
 
+function getLocalForcast(lat, long) {
+  if (lat && long) {
+    fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=imperial&appid=${openWeatherAPIKey}`
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        console.log('local forecast', data);
+        setForecastData({
+          temp: data.main.temp,
+          wind: data.wind.speed,
+          humidity: data.main.humidity,
+          name: data.name,
+          icon: data.weather[0].icon,
+          status: data.weather[0].main,
+        });
+      });
+  }
+}
+
+function setForecastData(data) {
+  console.log('forecast data', data);
+  const localWeatherForecast = document.getElementById('localWeatherForecast');
+  localWeatherForecast.innerHTML = '';
+}
+
+// builds out the list of searched cities
 function setCities() {
   const savedLocations = document.getElementById('savedLocations');
   savedLocations.innerHTML = '';
@@ -117,7 +170,7 @@ function setCities() {
 
 function init() {
   errorMsg.textContent = '';
-  cityName = '';
+  document.getElementById('cityInput').value = '';
   setCities();
 }
 
