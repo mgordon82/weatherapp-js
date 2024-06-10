@@ -9,6 +9,7 @@ function displayErrorMsg(type, message) {
   errorMsg.setAttribute('class', type);
 }
 
+// adding event listener to apply click and call the fetch lat lon function
 searchCityButton.addEventListener('click', function (event) {
   event.preventDefault();
   let cityName = document.getElementById('cityInput').value;
@@ -17,15 +18,15 @@ searchCityButton.addEventListener('click', function (event) {
     displayErrorMsg('has-text-danger', 'Must enter a city');
   }
   getLatLong(cityName);
-  console.log('did we make it here');
   cityName = '';
   init();
 });
 
+// takes in the input city name value and gets the lat/lon for the weather fetch call
 function getLatLong(city) {
   if (city !== '') {
     fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${openWeatherAPIKey}`
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${openWeatherAPIKey}`
     )
       .then(function (response) {
         return response.json();
@@ -46,10 +47,13 @@ function getLatLong(city) {
       });
   }
 }
+
+// function to check if there is a duplicate city in the saved cities list
 function duplicateCity(cityName) {
   return savedCities?.some((city) => city.name === cityName);
 }
 
+// takes the lat/lon and does a fetch call for current weather and forecast weather
 function getCityWeather(lat, long) {
   if (lat && long) {
     const currentWeatherFetch = fetch(
@@ -69,6 +73,7 @@ function getCityWeather(lat, long) {
       }
       return response.json().then((data) => ({ data }));
     });
+    // waiting for both calls to complete then setting the data set with the data we need
     Promise.all([currentWeatherFetch, forecastWeatherFetch])
       .then(([currentWeatherResponse, forecastWeatherResponse]) => {
         const currentWeather = currentWeatherResponse.data;
@@ -100,6 +105,7 @@ function getCityWeather(lat, long) {
   }
 }
 
+// function that the data set goes into to be applied to the page
 function setWeatherData(data) {
   const localWeatherData = document.getElementById('localWeatherData');
   const localWeatherForecast = document.getElementById('localWeatherForecast');
@@ -169,6 +175,7 @@ function setCities() {
   }
 }
 
+// initial page load function
 function init() {
   errorMsg.textContent = '';
   document.getElementById('cityInput').value = '';
